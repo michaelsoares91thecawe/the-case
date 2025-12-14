@@ -133,8 +133,8 @@ export default function StatisticsDashboard({ data, totalValue, totalBottles }: 
                     <div className="h-full w-full">
                         <ComposableMap projectionConfig={{ scale: 140 }}>
                             <Geographies geography={geoUrl}>
-                                {({ geographies }) =>
-                                    geographies.map((geo) => {
+                                {({ geographies }: { geographies: any[] }) =>
+                                    geographies.map((geo: any) => {
                                         const isHighlighted = countryCounts[geo.properties.name] || 0;
                                         return (
                                             <Geography
@@ -142,6 +142,7 @@ export default function StatisticsDashboard({ data, totalValue, totalBottles }: 
                                                 geography={geo}
                                                 fill={isHighlighted ? "#7f1d1d" : "#e5e7eb"}
                                                 stroke="#D6D6DA"
+                                                strokeWidth={0.5}
                                                 style={{
                                                     default: { outline: "none" },
                                                     hover: { fill: "#991b1b", outline: "none" },
