@@ -12,6 +12,7 @@ interface ScannedData {
     region?: string;
     country?: string;
     grapes?: string;
+    image?: string;
 }
 
 interface LabelScannerProps {
@@ -50,7 +51,15 @@ export default function LabelScanner({ onScanComplete, onClose }: LabelScannerPr
                 setStatus("Analyse terminée !");
                 setProgress(100);
                 setTimeout(() => {
-                    onScanComplete(result.data);
+                    // Convert file to base64 for preview/storage
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        onScanComplete({
+                            ...result.data,
+                            image: reader.result as string
+                        });
+                    };
+                    reader.readAsDataURL(file);
                 }, 500);
             } else {
                 setStatus(result.message || "Erreur d'analyse");

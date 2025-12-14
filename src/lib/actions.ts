@@ -44,6 +44,7 @@ const WineSchema = z.object({
     quantity: z.coerce.number().min(1),
     buyPrice: z.coerce.number().min(0),
     isVisible: z.coerce.boolean(),
+    image: z.string().optional(),
 });
 
 
@@ -67,6 +68,7 @@ export async function createWine(prevState: any, formData: FormData) {
         quantity: formData.get('quantity'),
         buyPrice: formData.get('buyPrice'),
         isVisible: formData.get('isVisible') === 'on',
+        image: formData.get('image'),
     });
 
     if (!validatedFields.success) {
@@ -76,7 +78,7 @@ export async function createWine(prevState: any, formData: FormData) {
 
     const {
         name, producer, vintage, type, region, country, grapes,
-        quantity, buyPrice, isVisible
+        quantity, buyPrice, isVisible, image
     } = validatedFields.data;
 
     try {
@@ -102,7 +104,8 @@ export async function createWine(prevState: any, formData: FormData) {
                     type,
                     region,
                     country,
-                    grapes
+                    grapes,
+                    image
                 }
             });
         }
