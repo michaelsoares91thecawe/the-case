@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
-import { User, Mail, Phone, MapPin, Shield, Download, Upload, LogOut } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Shield, LogOut } from 'lucide-react';
 import { signOut } from '@/auth';
+import DataManagementCard from '@/components/ui/data-management-card';
 
 export default async function ProfilePage() {
     const session = await auth();
@@ -66,19 +67,7 @@ export default async function ProfilePage() {
                     </div>
 
                     {/* Data Card */}
-                    <div className="bg-white dark:bg-[#1a1c23] rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-white/5">
-                        <h3 className="font-bold font-serif mb-4 flex items-center gap-2">
-                            <Download className="w-4 h-4" /> Export / Import
-                        </h3>
-                        <div className="space-y-3">
-                            <button className="w-full py-3 border border-wine-900 text-wine-900 dark:border-wine-400 dark:text-wine-400 rounded-lg flex items-center justify-center gap-2 font-medium hover:bg-wine-50 dark:hover:bg-wine-900/20 transition-colors">
-                                <Download className="w-4 h-4" /> Export CSV
-                            </button>
-                            <button className="w-full py-3 border border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300 rounded-lg flex items-center justify-center gap-2 font-medium hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                                <Upload className="w-4 h-4" /> Import CSV
-                            </button>
-                        </div>
-                    </div>
+                    <DataManagementCard />
                 </div>
 
                 {/* Main Form Area (Col 8) */}
