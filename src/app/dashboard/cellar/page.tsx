@@ -16,7 +16,10 @@ export default async function CellarPage({ searchParams }: { searchParams: Promi
     const resolvedSearchParams = await searchParams; // Await searchParams as required in Next.js 15+
 
     // Build filter query
-    const where: any = { userId: session?.user?.id };
+    const where: any = {
+        userId: session?.user?.id,
+        quantity: { gt: 0 }
+    };
 
     if (resolvedSearchParams?.query) {
         where.wine = {
