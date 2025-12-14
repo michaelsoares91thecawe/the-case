@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { Camera, Upload, X, Loader2, ScanLine } from 'lucide-react';
-import Tesseract from 'tesseract.js';
+// Tesseract imported dynamically to avoid SSR __dirname errors
 
 interface ScannedData {
     name?: string;
@@ -29,6 +29,7 @@ export default function LabelScanner({ onScanComplete, onClose }: LabelScannerPr
         setStatus('Chargement du moteur...');
 
         try {
+            const Tesseract = (await import('tesseract.js')).default;
             // Tesseract v6: createWorker(langs, oem, options)
             const worker = await Tesseract.createWorker('eng+fra', 1, {
                 logger: m => {
