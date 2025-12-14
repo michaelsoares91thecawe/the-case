@@ -55,3 +55,41 @@ export async function generateCellarAdvice(cellarItems: any[], userQuestion?: st
         return `Erreur lors de l'analyse : ${error instanceof Error ? error.message : String(error)}`;
     }
 }
+
+export async function analyzeWineLabel(imageBase64: string) {
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const prompt = `
+            Analyse cette étiquette de vin.
+            Extrais les informations suivantes au format JSON strict (sans Markdown autour):
+            {
+                "name": "Nom du vin (ex: Château Margaux)",
+                "vintage": "Année (ex: 2015) ou null",
+                "producer": "Producteur (ex: Domaine de la Romanée-Conti)",
+                "type": "RED, WHITE, ROSE, SPARKLING, ou OTHER",
+                "region": "Région (ex: Bordeaux, Bourgogne) ou null",
+                "country": "Pays (ex: France, Italie) ou null",
+                "grapes": "Cépages estimés ou indiqués (ex: Merlot, Cabernet) ou null"
+            }
+            Si tu ne trouves pas une info, mets null.
+        `;
+
+        const imagePart = {
+            inlineData: {
+                data: imageBase64,
+                mimeType: "image/jpeg",
+            },
+        };
+
+        const result = await model.generateContent([prompt, imagePart]);
+        const response = await result.response;
+        const text = response.text();
+
+        // Clean up markdown code blocks if present
+        const jsonString = text.replace(/```json\n|\n```/g, "").replace(/```/g, "").trim();
+        return JSON.parse(jsonString);
+    } catch (error) {
+        console.error("AI Label Analysis Error:", error);
+        return null;
+    }
+}
