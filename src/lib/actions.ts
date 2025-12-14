@@ -359,3 +359,25 @@ export async function updateWine(id: string, prevState: any, formData: FormData)
 export async function logOut() {
     await signOut({ redirectTo: '/login' });
 }
+
+import { analyzeWineLabel } from '@/lib/ai';
+
+export async function scanLabelAction(formData: FormData) {
+    const file = formData.get('image') as File;
+    if (!file) return { success: false, message: "Image manquante" };
+
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const base64 = buffer.toString('base64');
+
+        const data = await analyzeWineLabel(base64);
+
+        if (!data) return { success: false, message: "L'IA n'a pas pu lire l'étiquette." };
+
+        return { success: true, data };
+    } catch (e) {
+        console.error("Scan Action Error:", e);
+        return { success: false, message: "Erreur serveur lors de l'analyse." };
+    }
+}
