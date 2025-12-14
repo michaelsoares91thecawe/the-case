@@ -264,6 +264,21 @@ export async function approveUser(userId: string) {
     revalidatePath('/dashboard/admin/users');
 }
 
+export async function deleteUser(userId: string) {
+    await prisma.user.delete({
+        where: { id: userId }
+    });
+    revalidatePath('/dashboard/admin/users');
+}
+
+export async function updateUserRole(userId: string, newRole: string) {
+    await prisma.user.update({
+        where: { id: userId },
+        data: { role: newRole }
+    });
+    revalidatePath('/dashboard/admin/users');
+}
+
 export async function rejectUser(userId: string) {
     await prisma.user.update({
         where: { id: userId },
@@ -272,10 +287,9 @@ export async function rejectUser(userId: string) {
     revalidatePath('/dashboard/admin/users');
 }
 
-export async function inviteUser(email: string, name: string) {
+export async function inviteUser(email: string, name: string, role: string = 'USER') {
     try {
-        // Create user with APPROVED status and random password (they should reset it or use magic link ideally)
-        // For simplicity: We pre-create them.
+        // Create user with APPROVED status and random password
         const tempPassword = await hash('welcome123', 10);
         await prisma.user.create({
             data: {
@@ -283,7 +297,7 @@ export async function inviteUser(email: string, name: string) {
                 name,
                 password: tempPassword,
                 status: 'APPROVED',
-                role: 'USER'
+                role: role // Use the passed role
             }
         });
         return { success: true, message: 'Utilisateur invité avec succès (Mot de passe temp: welcome123)' };
