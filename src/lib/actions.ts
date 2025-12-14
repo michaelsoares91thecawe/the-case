@@ -385,6 +385,43 @@ export async function scanLabelAction(formData: FormData) {
     }
 }
 
+// Market Value Update
+import { estimateWinePrice } from '@/lib/ai';
+
+export async function updateWineMarketData(wineId: string) {
+    const session = await auth();
+    if (!session?.user?.id) return { success: false, message: "Non authentifié" };
+
+    try {
+        const wine = await prisma.wine.findUnique({
+            where: { id: wineId }
+        });
+
+        if (!wine) return { success: false, message: "Vin introuvable" };
+
+        const estimate = await estimateWinePrice(wine.name, wine.producer, wine.vintage, wine.country);
+
+        if (!estimate || !estimate.price) {
+            return { success: false, message: "Impossible d'estimer le prix" };
+        }
+
+        await prisma.wine.update({
+            where: { id: wineId },
+            data: {
+                marketPrice: estimate.price,
+                marketPriceUpdated: new Date()
+            }
+        });
+
+        revalidatePath('/dashboard/cellar');
+        return { success: true, price: estimate.price, message: `Prix estimé: €${estimate.price}` };
+
+    } catch (e) {
+        console.error("Market Update Error:", e);
+        return { success: false, message: "Erreur lors de la mise à jour du prix" };
+    }
+}
+
 // Data Export/Import
 export async function exportCellar() {
     const session = await auth();
