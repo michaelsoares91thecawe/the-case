@@ -41,6 +41,8 @@ model Wine {
   grapes        String?
   image         String?   // URL
   alcohol       Float?
+  marketPrice   Float?
+  marketPriceUpdated DateTime?
   
   // Tracking
   createdAt     DateTime  @default(now())
