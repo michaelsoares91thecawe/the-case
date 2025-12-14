@@ -99,3 +99,39 @@ export async function analyzeWineLabel(imageBase64: string) {
         return null;
     }
 }
+
+export async function estimateWinePrice(wineName: string, producer: string, vintage: number | null, country: string | null) {
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const prompt = `
+            Tu es un expert mondial en valorisation de vins et sommelier.
+            Estime le prix moyen actuel du marché (Prix de vente moyen TTC en magasin spécialisé ou en ligne en Europe, en Euros) pour le vin suivant :
+            
+            Vin: ${wineName}
+            Producteur: ${producer}
+            Millésime: ${vintage || "Non spécifié"}
+            Pays: ${country || "Non spécifié"}
+
+            Si le millésime est manquant, donne une estimation pour un millésime récent représentatif.
+            Cherche dans ta base de connaissances les prix actuels (Vivino, Wine-Searcher, marchands).
+
+            Réponds STRICTEMENT au format JSON :
+            {
+                "price": number (Prix en Euros, ex: 25.50),
+                "confidence": "string" (low, medium, high),
+                "currency": "EUR"
+            }
+            Si tu ne trouves pas le vin exact, donne une estimation basée sur l'appellation et le producteur, avec confidence 'low'.
+        `;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        const jsonString = text.replace(/```json\n|\n```/g, "").replace(/```/g, "").trim();
+        return JSON.parse(jsonString) as { price: number, confidence: string, currency: string };
+
+    } catch (error) {
+        console.error("AI Price Estimation Error:", error);
+        return null;
+    }
+}
