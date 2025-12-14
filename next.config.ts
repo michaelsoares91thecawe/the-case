@@ -9,7 +9,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverExternalPackages: ['tesseract.js', 'bcryptjs'],
 };
 
 export default nextConfig;
