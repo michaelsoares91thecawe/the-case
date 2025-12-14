@@ -27,7 +27,7 @@ const links = [
     { name: 'Admin', href: '/dashboard/admin', icon: ShieldAlert },
 ];
 
-export default function SideNav({ userRole }: { userRole?: string }) {
+export default function SideNav({ userRole, unreadCount = 0 }: { userRole?: string, unreadCount?: number }) {
     const pathname = usePathname();
 
     return (
@@ -60,11 +60,19 @@ export default function SideNav({ userRole }: { userRole?: string }) {
                                 },
                             )}
                         >
-                            <LinkIcon className={clsx("w-5 h-5 transition-colors", {
-                                'text-wine-500': isActive,
-                                'text-gray-500 group-hover:text-white': !isActive
-                            })} />
-                            <span>{link.name}</span>
+                            <div className="relative flex items-center gap-3">
+                                <LinkIcon className={clsx("w-5 h-5 transition-colors", {
+                                    'text-wine-500': isActive,
+                                    'text-gray-500 group-hover:text-white': !isActive
+                                })} />
+                                <span>{link.name}</span>
+                                {link.name === 'Messages' && unreadCount > 0 && (
+                                    <span className="absolute -right-2 top-0 flex h-2.5 w-2.5">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                                    </span>
+                                )}
+                            </div>
                         </Link>
                     );
                 })}
