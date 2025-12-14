@@ -4,7 +4,12 @@ import { updateWine } from '@/lib/actions';
 import { useActionState, useState } from 'react';
 import { ScanLine } from 'lucide-react';
 
-const initialState = {
+interface State {
+    message: string;
+    success?: boolean;
+}
+
+const initialState: State = {
     message: '',
 };
 
