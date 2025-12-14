@@ -1,7 +1,32 @@
 'use client';
 
 import { useMemo } from 'react';
+// @ts-ignore
 import { ComposableMap, Geographies, Geography, Marker } from 'react-simple-maps';
+
+// ... (code)
+
+<Geographies geography={geoUrl}>
+    {({ geographies }: { geographies: any[] }) =>
+        geographies.map((geo: any) => {
+            const isHighlighted = countryCodes.includes(geo.properties.ISO_A3);
+            return (
+                <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    fill={isHighlighted ? "#bea932" : "#3f3f46"}
+                    stroke="#18181b"
+                    strokeWidth={0.5}
+                    style={{
+                        default: { outline: "none" },
+                        hover: { fill: isHighlighted ? "#d4bd39" : "#52525b", outline: "none" },
+                        pressed: { outline: "none" },
+                    }}
+                />
+            );
+        })
+    }
+</Geographies>
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { motion } from 'framer-motion';
 import { Wine, Globe, TrendingUp } from 'lucide-react';
