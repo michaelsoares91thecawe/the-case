@@ -59,20 +59,26 @@ export async function generateCellarAdvice(cellarItems: any[], userQuestion?: st
 export async function analyzeWineLabel(imageBase64: string) {
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const prompt = `
-            Analyse cette étiquette de vin.
-            Extrais les informations suivantes au format JSON strict (sans Markdown autour):
-            {
-                "name": "Nom du vin (ex: Château Margaux)",
-                "vintage": "Année (ex: 2015) ou null",
-                "producer": "Producteur (ex: Domaine de la Romanée-Conti)",
-                "type": "RED, WHITE, ROSE, SPARKLING, ou OTHER",
-                "region": "Région (ex: Bordeaux, Bourgogne) ou null",
-                "country": "Pays (ex: France, Italie) ou null",
-                "grapes": "Cépages estimés ou indiqués (ex: Merlot, Cabernet) ou null"
-            }
-            Si tu ne trouves pas une info, mets null.
-        `;
+            Tu es un Sommelier Expert mondialement reconnu.Analyse cette image d'étiquette de vin.
+            Ta mission est d'extraire les informations visibles MAIS AUSSI de DÉDUIRE les informations manquantes grâce à ta connaissance encyclopédique.
+
+            Règles de déduction:
+        1. Si l'année n'est pas visible, cherche une petite mention ou déduis - la si possible(sinon null).
+            2. Si le pays n'est pas écrit, DÉDUIS-LE de la région (ex: Bordeaux -> France, Chianti -> Italie (Italy), Rioja -> Espagne (Spain)). Le pays DOIT être en Anglais (ex: France, Italy, Spain, USA).
+        3. Si les cépages(grapes) ne sont pas écrits, DÉDUIS - LES de l'appellation ou de la région (ex: Chablis -> Chardonnay, Beaujolais -> Gamay, Barolo -> Nebbiolo).
+        4. Le TYPE(RED, WHITE...) doit être cohérent avec l'appellation (ex: Chablis = WHITE).
+
+            Extrais les résultats au format JSON strict:
+        {
+            "name": "Nom complet du vin (Producteur + Cuvée)",
+                "vintage": "Année (entier, ex: 2015) ou null",
+                    "producer": "Nom du domaine/producteur",
+                        "type": "RED, WHITE, ROSE, SPARKLING, ou OTHER",
+                            "region": "Région/Appellation",
+                                "country": "Pays (en Anglais, ex: France)",
+                                    "grapes": "Cépages principaux (ex: Merlot, Cabernet Sauvignon)"
+        }
+            Si tu es sûr à 90 % d'une info non écrite, mets-la. Si tu ne trouves vraiment pas, mets null.
 
         const imagePart = {
             inlineData: {
