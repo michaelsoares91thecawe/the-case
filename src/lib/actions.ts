@@ -95,49 +95,45 @@ export async function createWine(prevState: any, formData: FormData) {
             }
         });
 
-    }
+        if (!wine) {
+            // Estimate price during creation
+            const estimate = await estimateWinePrice(name, producer, vintage, country || null);
+
+            wine = await prisma.wine.create({
+                data: {
+                    name,
+                    producer,
+                    vintage,
+                    type,
+                    region,
+                    country,
+                    grapes,
+                    image,
+                    marketPrice: estimate?.price || null,
+                    marketPriceUpdated: estimate?.price ? new Date() : null
+                }
             });
         }
 
-if (!wine) {
-    // Estimate price during creation
-    const estimate = await estimateWinePrice(name, producer, vintage, country || null);
-
-    wine = await prisma.wine.create({
-        data: {
-            name,
-            producer,
-            vintage,
-            type,
-            region,
-            country,
-            grapes,
-            image,
-            marketPrice: estimate?.price || null,
-            marketPriceUpdated: estimate?.price ? new Date() : null
-        }
-    });
-}
-
-// 2. Create CellarItem
-await prisma.cellarItem.create({
-    data: {
-        userId: session.user.id,
-        wineId: wine.id,
-        quantity,
-        buyPrice,
-        isVisible,
-    }
-});
+        // 2. Create CellarItem
+        await prisma.cellarItem.create({
+            data: {
+                userId: session.user.id,
+                wineId: wine.id,
+                quantity,
+                buyPrice,
+                isVisible,
+            }
+        });
 
     } catch (e) {
-    console.error("Failed to create wine:", e);
-    return { message: `Database Error: Failed to add wine. ${e instanceof Error ? e.message : ''}` };
-}
+        console.error("Failed to create wine:", e);
+        return { message: `Database Error: Failed to add wine. ${e instanceof Error ? e.message : ''}` };
+    }
 
-revalidatePath('/dashboard/cellar');
-revalidatePath('/dashboard');
-redirect('/dashboard/cellar');
+    revalidatePath('/dashboard/cellar');
+    revalidatePath('/dashboard');
+    redirect('/dashboard/cellar');
 }
 
 const MessageSchema = z.object({

@@ -56,10 +56,15 @@ export function WineCard({ item }: WineCardProps) {
                     </div>
                     <div className="flex flex-col text-right">
                         <span className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold flex items-center justify-end gap-1">
+                            {wine.marketPrice && buyPrice ? (
+                                <span className={wine.marketPrice >= buyPrice ? "text-green-500" : "text-red-500"}>
+                                    {((wine.marketPrice - buyPrice) / buyPrice * 100).toFixed(0)}%
+                                </span>
+                            ) : null}
                             Val. Est. <TrendingUp className="w-3 h-3 text-green-500" />
                         </span>
                         <span className="text-sm font-bold text-green-600 dark:text-green-500">
-                            €{((buyPrice || 0) * 1.15).toFixed(2)}
+                            €{(wine.marketPrice || ((buyPrice || 0) * 1.15)).toFixed(2)}
                         </span>
                     </div>
                 </div>
