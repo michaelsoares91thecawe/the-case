@@ -31,6 +31,7 @@ const initialState = {
 export default function ChatInterface({ initialMessages, recipient, currentUserId }: ChatInterfaceProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [messages, setMessages] = useState(initialMessages);
+    const [state, formAction] = useActionState(sendMessage, initialState);
 
     // Auto-scroll to bottom
     useEffect(() => {
@@ -96,7 +97,7 @@ export default function ChatInterface({ initialMessages, recipient, currentUserI
             {/* Input Area */}
             <div className="p-4 bg-white dark:bg-[#1a1c23] border-t border-gray-100 dark:border-white/5">
                 <form
-                    action={sendMessage}
+                    action={formAction}
                     className="flex gap-2"
                     onSubmit={() => {
                         // Optimistic simulation could go here
